@@ -1,33 +1,53 @@
 import { useState, useEffect } from 'react';
-import TaskItem from './TaskItem';
+import Task from './Task';
 
-const TodoList = () => {
+export default function TodoList() {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
-      try {
-        const response = await fetch('/api/tasks');
-        const data = await response.json();
-        setTasks(data.tasks);
-      } catch (error) {
-        console.error('Error fetching tasks:', error);
-      }
+      const res = await fetch('/api/tasks');
+      const data = await res.json();
+      setTasks(data.tasks);
     };
-
     fetchTasks();
   }, []);
 
+  const handleAddTask = async (text) => {
+    const res = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    setTasks([...tasks, data.task]);
+  };
+
+  const handleToggleCompleted = async (taskId) => {
+    await fetch(`/api/tasks?taskId=${taskId}`, { method: 'PUT' });
+    setTasks(
+      tasks.map((task) =>
+        task._id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    await fetch(`/api/tasks?taskId=${taskId}`, { method: 'DELETE' });
+    setTasks(tasks.filter((task) => task._id !== taskId));
+  };
+
   return (
     <div>
-      <h2>Tasks</h2>
-      <ul>
-        {tasks.map(task => (
-          <TaskItem key={task._id} task={task} />
-        ))}
-      </ul>
+      <AddTaskForm onAddTask={handleAddTask} />
+      {tasks.map((task) => (
+        <Task
+          key={task._id}
+          task={task}
+          onToggleCompleted={handleToggleCompleted}
+          onDeleteTask={handleDeleteTask}
+        />
+      ))}
     </div>
   );
-};
-
-export default TodoList;
+}

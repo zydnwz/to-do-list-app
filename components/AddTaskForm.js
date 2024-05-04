@@ -1,37 +1,24 @@
 import { useState } from 'react';
 
-const AddTaskForm = () => {
+export default function AddTaskForm({ onAddTask }) {
   const [text, setText] = useState('');
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-      });
-      if (response.ok) {
-        setText('');
-      }
-    } catch (error) {
-      console.error('Error adding task:', error);
-    }
+    if (!text) return;
+    await onAddTask(text);
+    setText('');
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="Enter task"
         value={text}
-        onChange={e => setText(e.target.value)}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Add a task"
       />
-      <button type="submit">Add Task</button>
+      <button type="submit">Add</button>
     </form>
   );
-};
-
-export default AddTaskForm;
+}
