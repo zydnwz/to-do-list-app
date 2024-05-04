@@ -1,13 +1,13 @@
 import Head from 'next/head';
-import styles from './styles.module.css';
 import TodoList from '../components/TodoList';
+import './styles.css';
 
 export default function Home() {
   return (
     <div>
       <Head>
         <title>Todo List App</title>
-        <meta name="description" content="A simple todo list app using Next.js and MongoDB. Add, edit, and delete tasks." />
+        <meta name="description" content="A simple todo list app using Next.js and MongoDB." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
