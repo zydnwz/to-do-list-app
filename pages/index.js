@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import styles from './styles.module.css';
 import TodoList from '../components/TodoList';
 
 export default function Home() {
