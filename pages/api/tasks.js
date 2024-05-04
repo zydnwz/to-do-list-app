@@ -15,8 +15,9 @@ export default async function handler(req, res) {
     res.status(201).json({ message: 'Task added', task: { _id: result.insertedId, text, completed: false } });
   } else if (req.method === 'PUT') {
     const { taskId } = req.query;
-    await db.collection('tasks').updateOne({ _id: new ObjectId(taskId) }, { $set: { completed: true } });
-    res.status(200).json({ message: 'Task completed' });
+    const { text } = req.body;
+    await db.collection('tasks').updateOne({ _id: new ObjectId(taskId) }, { $set: { text } });
+    res.status(200).json({ message: 'Task updated' });
   } else if (req.method === 'DELETE') {
     const { taskId } = req.query;
     await db.collection('tasks').deleteOne({ _id: new ObjectId(taskId) });

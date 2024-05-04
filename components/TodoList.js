@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AddTaskForm from '../components/AddTaskForm';
 import Task from './Task';
 
 export default function TodoList() {
@@ -6,7 +7,7 @@ export default function TodoList() {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const res = await fetch('/api/tasks');
+      const res = await fetch('/pages/api/tasks');
       const data = await res.json();
       setTasks(data.tasks);
     };
@@ -14,7 +15,7 @@ export default function TodoList() {
   }, []);
 
   const handleAddTask = async (text) => {
-    const res = await fetch('/api/tasks', {
+    const res = await fetch('/pages/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
@@ -24,7 +25,7 @@ export default function TodoList() {
   };
 
   const handleToggleCompleted = async (taskId) => {
-    await fetch(`/api/tasks?taskId=${taskId}`, { method: 'PUT' });
+    await fetch(`/pages/api/tasks?taskId=${taskId}`, { method: 'PUT' });
     setTasks(
       tasks.map((task) =>
         task._id === taskId ? { ...task, completed: !task.completed } : task
@@ -32,8 +33,21 @@ export default function TodoList() {
     );
   };
 
+  const handleEditTask = async (taskId, newText) => {
+    await fetch(`/pages/api/tasks?taskId=${taskId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: newText }),
+    });
+    setTasks(
+      tasks.map((task) =>
+        task._id === taskId ? { ...task, text: newText } : task
+      )
+    );
+  };
+
   const handleDeleteTask = async (taskId) => {
-    await fetch(`/api/tasks?taskId=${taskId}`, { method: 'DELETE' });
+    await fetch(`/pages/api/tasks?taskId=${taskId}`, { method: 'DELETE' });
     setTasks(tasks.filter((task) => task._id !== taskId));
   };
 
@@ -45,6 +59,7 @@ export default function TodoList() {
           key={task._id}
           task={task}
           onToggleCompleted={handleToggleCompleted}
+          onEditTask={handleEditTask}
           onDeleteTask={handleDeleteTask}
         />
       ))}
